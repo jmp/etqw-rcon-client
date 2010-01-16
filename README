@@ -7,10 +7,8 @@ It can be used to remotely send commands to a server.
 compiling
 ---------
 
-The program is written in ANSI C and I've tested it with TCC 0.9.25 and
-GCC 4.3.2, but it probably compiles on others as well. There is no Windows
-port yet, but that should be just a matter of adding the WinSock2 headers
-and doing WSAStartup/WSACleanup.
+The program is written in ANSI C and I've tested it with TCC 0.9.25, GCC 4.3.2
+and MSVC 15.0, but it probably compiles on others as well.
 
 usage
 -----
