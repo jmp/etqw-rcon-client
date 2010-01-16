@@ -72,10 +72,8 @@ int main(int argc, char* argv[])
 
 	for (p = result; p != NULL; p = p->ai_next) {
 		sock = socket(result->ai_family, result->ai_socktype, 0);
-		if (sock == INVALID_SOCKET) {
-			fprintf(stderr, "socket error\n");
+		if (sock == INVALID_SOCKET)
 			continue;
-		}
 		break;
 	}
 
