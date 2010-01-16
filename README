@@ -1,0 +1,24 @@
+etqwrcon
+========
+
+This is a small remote console client for Enemy Territory: Quake Wars.
+It can be used to remotely send commands to a server.
+
+compiling
+---------
+
+The program is written in ANSI C and I've tested it with TCC 0.9.25 and
+GCC 4.3.2, but it probably compiles on others as well. There is no Windows
+port yet, but that should be just a matter of adding the WinSock2 headers
+and doing WSAStartup/WSACleanup.
+
+usage
+-----
+
+Run the program without arguments to see the parameters. The server must have
+the net_ServerRemoteConsolePassword variable set before remote console can be
+used:
+
+	net_ServerRemoteConsolePassword "PASSWORD"
+
+The server will respond with an error if the remote console is not enabled.
