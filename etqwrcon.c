@@ -1,10 +1,23 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
+
+#ifdef _WIN32
+#define WINVER 0x0501 /* A hack to enable getaddrinfo on MinGW */
+#define WIN32_LEAN_AND_MEAN
+#define close closesocket
+#include <windows.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+typedef SOCKET sock_t;
+#else
+#define INVALID_SOCKET (-1)
 #include <sys/socket.h>
 #include <sys/time.h>
 #include <unistd.h>
 #include <netdb.h>
+typedef int sock_t;
+#endif /* _WIN32 */
 
 #define PACKET_SIZE 512
 #define RESPONSE_SIZE 20480
@@ -22,9 +35,17 @@ int main(int argc, char* argv[])
 	struct addrinfo *result;
 	struct addrinfo *p;
 	struct timeval tv;
+	sock_t sock;
 	fd_set fds;
 	int error;
-	int sock;
+#ifdef _WIN32
+	WSADATA wsa;
+
+	if (WSAStartup(MAKEWORD(2, 0), &wsa)) {
+		fprintf(stderr, "WSAStartup error\n");
+		return 1;
+	}
+#endif
 
 	if (argc < 4) {
 		fprintf(stderr, "usage: %s address[:port] password command\n", argv[0]);
@@ -51,8 +72,10 @@ int main(int argc, char* argv[])
 
 	for (p = result; p != NULL; p = p->ai_next) {
 		sock = socket(result->ai_family, result->ai_socktype, 0);
-		if (sock == -1)
+		if (sock == INVALID_SOCKET) {
+			fprintf(stderr, "socket error\n");
 			continue;
+		}
 		break;
 	}
 
@@ -67,12 +90,12 @@ int main(int argc, char* argv[])
 	tv.tv_usec = 0;
 
 	sprintf(packet, "\xff\xffrcon\xff%s\xff%s\xff", password, command);
-	if (sendto(sock, packet, strlen(packet), 0, p->ai_addr, p->ai_addrlen) != -1) {
+	if (sendto(sock, packet, sizeof(packet), 0, p->ai_addr, (socklen_t)p->ai_addrlen) != -1) {
 		int i = 0;
-		ssize_t n = 0;
+		long n = 0;
 		char response[RESPONSE_SIZE] = {0};
 
-		select(sock + 1, &fds, NULL, NULL, &tv);
+		select((int)sock + 1, &fds, NULL, NULL, &tv);
 
 		if (!FD_ISSET(sock, &fds))
 			fprintf(stderr, "host timed out\n");
@@ -87,6 +110,10 @@ int main(int argc, char* argv[])
 
 	freeaddrinfo(result);
 	close(sock);
+
+#ifdef _WIN32
+	WSACleanup();
+#endif
 
 	return 0;
 }
