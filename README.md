@@ -1,14 +1,16 @@
-etqwrcon
-========
+etqw-rcon-client
+================
 
-This is a small remote console client for Enemy Territory: Quake Wars.
-It can be used to remotely send commands to a server.
+This is a quick and dirty remote console client for the game "Enemy Territory:
+Quake Wars" by Splash Damage. It can be used to remotely send commands to an
+ETQW server. It is probably not much of use nowadays as the game is dead, but
+it remains here in the hope that it will be useful for somebody.
 
 compiling
 ---------
 
 The program is written in ANSI C and I've tested it with TCC 0.9.25, GCC 4.3.2
-and MSVC 15.0, but it probably compiles on others as well.
+and MSVC 15.0, but it might compile on others as well.
 
 usage
 -----
